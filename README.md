@@ -7,22 +7,24 @@
 #define pointType unsigned char
 
 class Point {
+public:
+	Point(pointType type, int layer = 0);
+
 private:
 	pointType type;
-public:
-	Point(pointType type);
+	float x, y;
+	int layer;
 };
 
 class Pin {
-private:
-	int x, y, z;
 public:
-	Pin(int x,int y, int z);
+	Pin(int x,int y);
+	
+private:
+	int x, y;
 };
 
 class Map {
-private:
-	Point*** map; // std::vector;
 public:
 	void takePoint(int x, int y, int z);
 	bool isTakenPoint(int x, int y, int z);
@@ -32,5 +34,8 @@ public:
 	
 	}
 	bool isTakenPoint(int x, int y, int z);
+	
+private:
+	std::vector<Point*> map;
 };
 ```
