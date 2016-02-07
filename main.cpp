@@ -3,6 +3,7 @@
 #include <assert.h>
 #include "utils.h"
 #include "map.h"
+#include "Polygon.h"
 
 bool test_pins(Map &map, std::vector<Point*> pins) {
     for (std::vector<Point*>::iterator it = pins.begin(); it != pins.end(); it++)
@@ -21,14 +22,14 @@ bool test_chain(Map &map) {
     return true;
 }
 
+void test_polygons() {
+    Polygon polygon;
+    std::vector<Point *> points;
+    points.push_back(new Point(1, 1));
+    points.push_back(new Point(10, 1));
+    polygon.writePolygon(points, 0);
+}
 
 int main() {
-    std::vector<Point*> pins = read_pin_coordinates("C:\\Users\\Ruslan\\ClionProjects\\project\\coordinates.csv");
-    Map map(200, 200);
-    map.setPins(pins);
-    test_pins(map, pins);
-    map.findPath(*pins[0], *pins[41]);
-    test_chain(map);
-    map.findPath(*pins[1], *pins[42]);
-    std::cerr << "Finished" << std::endl;
+    test_polygons();
 }

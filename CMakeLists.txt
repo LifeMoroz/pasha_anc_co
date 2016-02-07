@@ -3,5 +3,5 @@ project(project)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
-set(SOURCE_FILES main.cpp map.cpp map.h chain.cpp chain.h point.h global.h utils.cpp utils.h pin.h pin.cpp point.cpp)
+set(SOURCE_FILES main.cpp map.cpp map.h chain.cpp chain.h point.h global.h utils.cpp utils.h pin.h pin.cpp point.cpp Polygon.cpp Polygon.h PolygonPoint.cpp PolygonPoint.h)
 add_executable(project ${SOURCE_FILES})
