@@ -8,8 +8,11 @@
 #define cordType int  // 0.1 мм
 #define levelType unsigned char
 
-struct Point{
+class Point{
+public:
     cordType x, y;
     levelType level;
+    Point() {};
+    Point(levelType, cordType, cordType);
 };
 #endif //PROJECT_POINT_H

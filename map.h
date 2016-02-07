@@ -17,8 +17,8 @@ public:
     void setPin(Point);
     void setChain(levelType, cordType, cordType);
     void setChain(Point point);
-    void setPins(Point **);  // null-end array
-    void setChains(Point **);
+    void setPins(std::vector<Point>);  // null-end array
+    void setChains(std::vector<Point>);
 
     bool isFree(levelType, cordType, cordType);
     void thin();

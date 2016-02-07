@@ -45,23 +45,18 @@ void Map::setChain(Point point) {
     this->setChain(point.level, point.y, point.x);
 }
 
-void Map::setPins(Point **points) {  // null-end array
-    Point* point;
-    while ((point = *points++) != NULL) {
-        this->setPin(*point);
-    }
+void Map::setPins(std::vector<Point> points) {  // null-end array
+    for(std::vector<Point>::iterator it = points.begin(); it != points.end(); ++it)
+        this->setPin(*it);
 }
 
-void Map::setChains(Point **points) {
-    Point* point;
-    while ((point = *points++) != NULL) {
-        this->setChain(*point);
-    }
+void Map::setChains(std::vector<Point> points) {
+    for(std::vector<Point>::iterator it = points.begin(); it != points.end(); ++it)
+        this->setChain(*it);
 }
-
 
 bool Map::isFree(levelType z, cordType y, cordType x) {
-    return true;
+    return this->map[z][y][x] == Map::empty;
 }
 
 void Map::thin() {
