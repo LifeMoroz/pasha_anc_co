@@ -15,6 +15,7 @@ public:
     Point(cordType, cordType);
 
     friend bool operator== (Point &cP1, Point &cP2);
+    friend bool operator!= (Point &cP1, Point &cP2);
 
 };
 #endif //PROJECT_POINT_H

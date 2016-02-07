@@ -19,6 +19,7 @@ public:
     static const pointType empty;
     static const pointType chain;
     static const pointType pin;
+    static const pointType connect;
 
     bool setChain();
     int cost();
@@ -48,22 +49,19 @@ public:
     MapPoint* getPoint(Point);
     MapPoint* getPoint(cordType, cordType);
 
-    bool isFree(cordType, cordType);
     void findPath(const Point from, const Point to);
 
+    std::vector<Chain*> chains;
 private:
     MapPoint** map;
-    std::vector<Chain*> chains;
     std::vector<Pin*> pins;
-
-    void setPointType(cordType, cordType, pointType);
 
     cordType y_size;
     cordType x_size;
 
     void markAdjacentPoints(std::vector<Point> &points, Point point);
 
-    Point getAdjacentPoints();
+    Point *getAdjacentPoints(Point &point);
 };
 
 #endif //PROJECT_MAP_H
