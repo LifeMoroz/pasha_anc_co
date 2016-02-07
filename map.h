@@ -19,9 +19,8 @@ public:
     void setPin(levelType, cordType, cordType, pointType);
     void setPin(Pin);
     void setChain(levelType, cordType, cordType);
-    void setChain(Point point);
     void setPins(std::vector<Point*>);  // null-end array
-    void setChains(std::vector<Point>);
+    void setChain(Chain*);
 
     pointType getPoint(Point);
     Pin getPin(Point);
@@ -35,6 +34,7 @@ private:
     std::vector<Pin*> pins;
 
     void setPoint(levelType, cordType, cordType, pointType);
+    void setChain(Point point);
 
     levelType level_number;
     cordType y_size;

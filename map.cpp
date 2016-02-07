@@ -52,11 +52,16 @@ void Map::setPin(Pin pin) {
 
 void Map::setChain(levelType z, cordType y, cordType x) {
     this->setPoint(z, y, x, Map::chain);
-
 }
 
 void Map::setChain(Point point) {
     this->setChain(point.level, point.y, point.x);
+}
+
+void Map::setChain(Chain* chain) {
+    for(std::vector<Point*>::iterator it = chain->points.begin(); it != chain->points.end(); ++it)
+        this->setChain(**it);
+    this->chains.push_back(chain);
 }
 
 void Map::setPins(std::vector<Point*> points) {  // null-end array
@@ -66,13 +71,6 @@ void Map::setPins(std::vector<Point*> points) {  // null-end array
         this->setPin(pin);
     }
 }
-
-void Map::setChains(std::vector<Point> points) {
-    for(std::vector<Point>::iterator it = points.begin(); it != points.end(); ++it)
-        this->setChain(*it);
-//    std::copy(points.begin(), points.end(), std::back_inserter(this->chains));
-}
-
 bool Map::isFree(levelType z, cordType y, cordType x) {
     assert(z >= 0 && z < this->level_number);
     assert(y >= 0 && y < this->y_size);
