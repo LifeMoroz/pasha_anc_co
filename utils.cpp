@@ -5,31 +5,33 @@
 #include <fstream>
 #include <assert.h>
 #include <vector>
+#include <iostream>
 #include "utils.h"
-#include "pin.h"
+#include <algorithm>
 
 void pop_front_number(std::string s, char delim, int pos, int &new_pos, float &value) {
     int i = s.find_first_of(delim, pos);
-    new_pos = i;
     if (i!=-1) {
-        value = atof(s.substr(0, i).c_str());
+        value = atof(s.substr(pos, i).c_str());
     }
     else
-        value = atof(s.c_str());
+        value = atof(s.substr(pos).c_str());
+    new_pos = i + 1;
 }
 
-Pin line_to_pin(std::string &s, char delim){
-    int i = 0, k = 0;
+Pin line_to_pin(std::string s, char delim){
+    int i = 0;
+    std::replace(s.begin(), s.end(), ',', '.');
     float value;
-    pop_front_number(s, delim, i, k, value);  // number of pin
+    pop_front_number(s, delim, i, i, value);  // number of pin
     int number = (int)value;
-    pop_front_number(s, delim, i, k, value);  // type of pin 1|2
+    pop_front_number(s, delim, i, i, value);  // type of pin 1|2
     char type = (char)value;
-    pop_front_number(s, delim, i, k, value);  // x
+    pop_front_number(s, delim, i, i, value);  // x
     int x = (int)(value * 10);
-    pop_front_number(s, delim, i, k, value);  // y
+    pop_front_number(s, delim, i, i, value);  // y
     int y = (int)(value * 10);
-    return Pin(new Point(1,y,x), number);
+    return Pin(Point(1, y, x), number);
 }
 
 std::vector<Pin> read_pin_coordinates(std::string path_to_file){

@@ -7,10 +7,9 @@
 
 #include "point.h"
 
-class Pin {
-    Point point;
+class Pin: public Point{
     unsigned int number;
 public:
-    Pin(Point *point, unsigned int number);
+    Pin(Point point, unsigned int number);
 };
 #endif //PROJECT_PIN_H

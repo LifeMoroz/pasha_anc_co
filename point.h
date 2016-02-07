@@ -13,6 +13,7 @@ public:
     cordType x, y;
     levelType level;
     Point() {};
+    Point(const Point&);
     Point(levelType, cordType, cordType);
 };
 #endif //PROJECT_POINT_H
