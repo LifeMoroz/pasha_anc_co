@@ -35,6 +35,10 @@ private:
     std::vector<Pin*> pins;
 
     void setPoint(levelType, cordType, cordType, pointType);
+
+    levelType level_number;
+    cordType y_size;
+    cordType x_size;
 };
 
 #endif //PROJECT_MAP_H
