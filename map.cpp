@@ -116,12 +116,11 @@ void Map::findPath(Point from, Point to) {
             if (map_point != NULL && map_point->type != MapPoint::pin && map_point->type != MapPoint::connect or point == to) {
                 if (min_related == NULL || map_point->cost_path < min_related->cost_path
                         || min_related->type == MapPoint::pin || min_related->type == MapPoint::connect) {
-                    min_related = map_point;
                     min_i = i;
                 }
             }
             else if (ps[i] == from) {
-                chain_points.push_back(new Point(ps[min_i]));
+                chain_points.push_back(new Point(ps[i]));
                 point = *chain_points.back();
                 delete[] ps;
                 this->chains.push_back(new Chain(chain_points));
@@ -131,7 +130,7 @@ void Map::findPath(Point from, Point to) {
                 return;
             }
         }
-        //std::cout<<ps[min_i].x << " " << ps[min_i].y<< " " << min_related->cost_path << std::endl;
+        std::cout<<ps[min_i].x << " " << ps[min_i].y<< " " << min_related->cost_path << std::endl;
         chain_points.push_back(new Point(ps[min_i]));
         point = *chain_points.back();
         delete [] ps;
@@ -161,20 +160,16 @@ bool MapPoint::setChain() {
 bool MapPoint::set(int cost) {
     if (this->type == MapPoint::pin)
         return false;
-    this->type = MapPoint::empty;
-    if(this->cost_path > cost + 1) // Сюда можно добраться дешевле
-        this->cost_path = cost + 1;
+    if(this->cost_path > cost + this->cost()) // Сюда можно добраться дешевле
+        this->cost_path = cost + this->cost();
     else
         return false;
     return true;
 }
 
 int MapPoint::cost() {
-    return MapPoint::base_cost * count * 2 + MapPoint::base_cost_v * count;
+    return 1 + 10 * this->count;
 }
 
 MapPoint::MapPoint() {};
 
-bool MapPoint::isFree() {
-    return this->type == MapPoint::empty || this->type == MapPoint::chain;
-}

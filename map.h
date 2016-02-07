@@ -10,7 +10,6 @@ class MapPoint{
 
     static const int base_cost;
     static const int base_cost_v;
-    int count;
     void* related;
 public:
     MapPoint();
@@ -31,6 +30,8 @@ public:
     bool set(int cost);
 
     bool setPin(Pin* pin);
+
+    int count;
 };
 
 class Map {
