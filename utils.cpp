@@ -31,7 +31,7 @@ Pin* line_to_pin(std::string s, char delim){
     int x = (int)(value * 10);
     pop_front_number(s, delim, i, i, value);  // y
     int y = (int)(value * 10);
-    return new Pin(Point(1, y, x), number);
+    return new Pin(Point(y, x), number);
 }
 
 std::vector<Point*> read_pin_coordinates(std::string path_to_file){

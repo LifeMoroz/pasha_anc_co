@@ -33,29 +33,28 @@ public:
     static const int Vmin;
     static const int Smin;
 
-    Map(levelType, cordType, cordType);
+    Map(cordType, cordType);
     ~Map();
-    void setPin(levelType, cordType, cordType, pointType);
+    void setPin(cordType, cordType, pointType);
     void setPin(Pin);
-    void setChain(levelType, cordType, cordType);
+    void setChain(cordType, cordType);
     void setPins(std::vector<Point*>);  // null-end array
     void setChain(Chain*);
 
     MapPoint getPoint(Point);
 
-    bool isFree(levelType, cordType, cordType);
+    bool isFree(cordType, cordType);
     void thin();
     void findPath(const Point from, const Point to);
 
 private:
-    MapPoint*** map;
+    MapPoint** map;
     std::vector<Chain*> chains;
     std::vector<Pin*> pins;
 
-    void setPointType(levelType, cordType, cordType, pointType);
+    void setPointType(cordType, cordType, pointType);
     void setChain(Point point);
 
-    levelType level_number;
     cordType y_size;
     cordType x_size;
 
@@ -68,10 +67,9 @@ private:
 
     int cost(Point current, Point to);
     bool isFree(Point point);
-    bool markPoint(Point from, Point mark);
     void markNearlyPoints(std::vector<Point> &points, Point point, Point target);
 
-    MapPoint getPoint(int z, int y, int x);
+    MapPoint getPoint(cordType, cordType);
 };
 
 #endif //PROJECT_MAP_H
