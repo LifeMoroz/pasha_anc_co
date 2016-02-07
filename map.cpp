@@ -55,6 +55,7 @@ void Map::setPins(std::vector<Point*> points) {  // null-end array
 void Map::setChains(std::vector<Point> points) {
     for(std::vector<Point>::iterator it = points.begin(); it != points.end(); ++it)
         this->setChain(*it);
+    std::copy(points.begin(), points.end(), std::back_inserter(this->chains));
 }
 
 bool Map::isFree(levelType z, cordType y, cordType x) {
