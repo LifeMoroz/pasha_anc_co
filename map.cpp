@@ -107,27 +107,35 @@ void Map::findPath(Point from, Point to) {
     char min_i = 0;  // вообще конечно ломает немножко
     while (point != from) {
         ps = this->getAdjacentPoints(point);
-        for (char i=0; i<4; i++)
-            if (this->getPoint(ps[i])->type != MapPoint::pin && this->getPoint(ps[i])->type != MapPoint::connect) {
-                if (this->getPoint(ps[min_i])->cost_path > this->getPoint(ps[i])->cost_path)
+        min_i = 0;
+        MapPoint* map_point;
+        MapPoint* min_related;
+        for (char i = 0; i < 4; i++) {
+            map_point = this->getPoint(ps[i]);
+            min_related = this->getPoint(ps[min_i]);
+            if (map_point != NULL && map_point->type != MapPoint::pin && map_point->type != MapPoint::connect or point == to) {
+                if (min_related == NULL || map_point->cost_path < min_related->cost_path
+                        || min_related->type == MapPoint::pin || min_related->type == MapPoint::connect) {
+                    min_related = map_point;
                     min_i = i;
-                chain_points.push_back(new Point(ps[min_i]));
-                point = *chain_points.back();
+                }
             }
-            else if (ps[i] == from){
+            else if (ps[i] == from) {
                 chain_points.push_back(new Point(ps[min_i]));
                 point = *chain_points.back();
-                delete [] ps;
+                delete[] ps;
                 this->chains.push_back(new Chain(chain_points));
+                for (std::vector<Point *>::iterator it_ch = this->chains.back()->points.begin();
+                     it_ch != this->chains.back()->points.end(); it_ch++)
+                    this->getPoint(**it_ch)->setChain();
                 return;
             }
-            else {
-                std::cout << "Pin on path" << std::endl;
-            }
+        }
+        //std::cout<<ps[min_i].x << " " << ps[min_i].y<< " " << min_related->cost_path << std::endl;
+        chain_points.push_back(new Point(ps[min_i]));
+        point = *chain_points.back();
         delete [] ps;
     }
-    for (std::vector<Point*>::iterator it_ch = this->chains.back()->points.begin(); it_ch != this->chains.back()->points.end(); it_ch++)
-        this->getPoint(**it_ch)->setChain();
 }
 
 MapPoint::MapPoint(pointType type) {
