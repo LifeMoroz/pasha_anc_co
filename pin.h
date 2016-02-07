@@ -8,8 +8,8 @@
 #include "point.h"
 
 class Pin: public Point{
-    unsigned int number;
 public:
     Pin(Point point, unsigned int number);
+    pointType number;
 };
 #endif //PROJECT_PIN_H

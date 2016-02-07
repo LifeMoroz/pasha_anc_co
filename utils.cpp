@@ -19,7 +19,7 @@ void pop_front_number(std::string s, char delim, int pos, int &new_pos, float &v
     new_pos = i + 1;
 }
 
-Pin line_to_pin(std::string s, char delim){
+Pin* line_to_pin(std::string s, char delim){
     int i = 0;
     std::replace(s.begin(), s.end(), ',', '.');
     float value;
@@ -31,13 +31,13 @@ Pin line_to_pin(std::string s, char delim){
     int x = (int)(value * 10);
     pop_front_number(s, delim, i, i, value);  // y
     int y = (int)(value * 10);
-    return Pin(Point(1, y, x), number);
+    return new Pin(Point(1, y, x), number);
 }
 
-std::vector<Pin> read_pin_coordinates(std::string path_to_file){
+std::vector<Point*> read_pin_coordinates(std::string path_to_file){
     std::ifstream infile(path_to_file);
     std::string line;
-    std::vector<Pin> pin_ptrs;
+    std::vector<Point*> pin_ptrs;
     while (std::getline(infile, line)) {
         pin_ptrs.push_back(line_to_pin(line, ';'));
     }

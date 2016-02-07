@@ -8,6 +8,6 @@
 #include "point.h"
 #include "pin.h"
 
-Pin line_to_pin(std::string s1, char delim);
-std::vector<Pin> read_pin_coordinates(std::string);
+Pin * line_to_pin(std::string s1, char delim);
+std::vector<Point*> read_pin_coordinates(std::string);
 #endif //PROJECT_UTILS_H

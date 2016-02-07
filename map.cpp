@@ -1,7 +1,7 @@
 #include <algorithm>
-#include "global.h"
 #include "map.h"
 #include <assert.h>
+#include <iostream>
 
 const pointType Map::empty = 0;
 const pointType Map::chain = 1;
@@ -23,17 +23,16 @@ Map::~Map() {
 }
 
 void Map::setPoint(levelType z, cordType y, cordType x, pointType value) {
-    assert(value == Map::chain || value == Map::pin || value == Map::empty);
     assert(this->isFree(z, y, x));
     this->map[z][y][x] = value;
 }
 
-void Map::setPin(levelType z, cordType y, cordType x) {
-    this->setPoint(z, y, x, Map::pin);
+void Map::setPin(levelType z, cordType y, cordType x, pointType number) {
+    this->setPoint(z, y, x, Map::pin + number);
 }
 
-void Map::setPin(Point point) {
-    this->setPin(point.level, point.y, point.x);
+void Map::setPin(Pin pin) {
+    this->setPin(pin.level, pin.y, pin.x, pin.number);
 }
 
 void Map::setChain(levelType z, cordType y, cordType x) {
@@ -45,9 +44,12 @@ void Map::setChain(Point point) {
     this->setChain(point.level, point.y, point.x);
 }
 
-void Map::setPins(std::vector<Point> points) {  // null-end array
-    for(std::vector<Point>::iterator it = points.begin(); it != points.end(); ++it)
-        this->setPin(*it);
+void Map::setPins(std::vector<Point*> points) {  // null-end array
+    for(std::vector<Point*>::iterator it = points.begin(); it != points.end(); ++it){
+        Point* point = *it;
+        Pin pin = (Pin&)*point;
+    }
+    std::copy(points.begin(), points.end(), std::back_inserter(this->pins));
 }
 
 void Map::setChains(std::vector<Point> points) {
@@ -61,4 +63,12 @@ bool Map::isFree(levelType z, cordType y, cordType x) {
 
 void Map::thin() {
     return;
+}
+
+pointType Map::getPoint(Point point) {
+    return this->map[point.level][point.y][point.x];
+}
+
+Pin Map::getPin(Point point) {
+    return Pin(point, this->getPoint(point));
 }
