@@ -11,6 +11,7 @@ class MapPoint{
     static const int base_cost;
     static const int base_cost_v;
     int count;
+    void* related;
 public:
     MapPoint();
     MapPoint(int type);
@@ -24,6 +25,11 @@ public:
     bool isFree();
 
     int type;
+    int cost_path;
+
+    bool set(int cost);
+
+    bool setPin(Pin* pin);
 };
 
 class Map {
@@ -37,14 +43,12 @@ public:
     ~Map();
     void setPin(cordType, cordType, pointType);
     void setPin(Pin);
-    void setChain(cordType, cordType);
     void setPins(std::vector<Point*>);  // null-end array
-    void setChain(Chain*);
 
-    MapPoint getPoint(Point);
+    MapPoint* getPoint(Point);
+    MapPoint* getPoint(cordType, cordType);
 
     bool isFree(cordType, cordType);
-    void thin();
     void findPath(const Point from, const Point to);
 
 private:
@@ -53,23 +57,13 @@ private:
     std::vector<Pin*> pins;
 
     void setPointType(cordType, cordType, pointType);
-    void setChain(Point point);
 
     cordType y_size;
     cordType x_size;
 
+    void markAdjacentPoints(std::vector<Point> &points, Point point);
 
-    int max_lvl;
-    int max_v;
-    int max_s;
-
-    int finded_min_cost;
-
-    int cost(Point current, Point to);
-    bool isFree(Point point);
-    void markNearlyPoints(std::vector<Point> &points, Point point, Point target);
-
-    MapPoint getPoint(cordType, cordType);
+    Point getAdjacentPoints();
 };
 
 #endif //PROJECT_MAP_H

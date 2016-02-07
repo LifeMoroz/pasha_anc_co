@@ -9,7 +9,7 @@
 
 class Pin: public Point{
 public:
-    Pin(Point point, unsigned int number);
+    Pin(Point point, int number);
     pointType number;
 };
 #endif //PROJECT_PIN_H

@@ -18,7 +18,6 @@ const pointType Map::Smin = 50;
 Map::Map(cordType y_size, cordType x_size) {
     this->y_size = y_size;
     this->x_size = x_size;
-    this->max_lvl = 1;
 
     this->map = new MapPoint*[y_size];
     for (int y = 0; y < y_size; y++) {
@@ -41,38 +40,26 @@ void Map::setPointType(cordType y, cordType x, pointType type) {
     this->map[y + 10][x + 10].type = type;
 }
 
-MapPoint Map::getPoint(cordType y, cordType x) {
+MapPoint* Map::getPoint(cordType y, cordType x) {
     if ((y + 10 >= 0 && y + 10 < this->y_size) && (x + 10 >= 0 && x + 10 < this->x_size))
-        return this->map[y + 10][x + 10];
+        return &this->map[y + 10][x + 10];
     else
-        return MapPoint(MapPoint::pin);
+        return NULL;
 }
 
-MapPoint Map::getPoint(Point point) {
+MapPoint* Map::getPoint(const Point point) {
     return this->getPoint(point.y, point.x);
 }
 
 void Map::setPin(cordType y, cordType x, pointType number) {
-    this->setPointType(y, x, MapPoint::pin);
-    this->pins.push_back(new Pin(Point(y,x), number));
+    Pin* new_pin = (new Pin(Point(y,x), number));
+    MapPoint* mp = this->getPoint(y, x);
+    mp->setPin(new_pin);
+    this->pins.push_back(new_pin);
 }
 
 void Map::setPin(Pin pin) {
     this->setPin(pin.y, pin.x, pin.number);
-}
-
-void Map::setChain(cordType y, cordType x) {
-    this->setPointType(y, x, MapPoint::chain);
-}
-
-void Map::setChain(Point point) {
-    this->setChain(point.y, point.x);
-}
-
-void Map::setChain(Chain* chain) {
-    for(std::vector<Point*>::iterator it = chain->points.begin(); it != chain->points.end(); ++it)
-        this->setChain(**it);
-    this->chains.push_back(chain);
 }
 
 void Map::setPins(std::vector<Point*> points) {  // null-end array
@@ -84,54 +71,44 @@ void Map::setPins(std::vector<Point*> points) {  // null-end array
 }
 
 bool Map::isFree(cordType y, cordType x) {
-    return this->getPoint(y, x).isFree();
+    return this->getPoint(y, x)->isFree();
 }
 
-bool Map::isFree(Point point) {
-    return this->getPoint(point).isFree();
+Point Map::getAdjacentPoints() {
+
 }
 
-void Map::thin() {
-    return;
-}
+void Map::markAdjacentPoints(std::vector<Point> &points, Point point) {
+    // Окрестность Мура
+    Point ps[4];
 
-int Map::cost(Point current, Point to) {
-    // L/Lmin + V/(2*Vmin) + S/(3*Smin) -> min
-    int i1 = this->max_lvl / this->Lmin;
-    int i2 = (to.y - current.y) / this->Vmin;
-    int i3 = (to.x - current.x) / this->Smin;
-    return i1 + i2/2 + i3/3;
-}
+    ps[0] = Point(point.y - 1, point.x);
+    ps[1] = Point(point.y, point.x - 1);
+    ps[2] = Point(point.y + 1, point.x);
+    ps[3] = Point(point.y, point.x + 1);
 
-void Map::markNearlyPoints(std::vector<Point> &points, Point point, Point target) {
-    // Окрестность Мура 3d
-    Point* ps = new Point[6];
-    ps[0] = Point(point.y, point.x);
-    ps[1] = Point(point.y - 1, point.x);
-    ps[2] = Point(point.y, point.x - 1);
-    ps[3] = Point(point.y, point.x);
-    ps[4] = Point(point.y + 1, point.x);
-    ps[5] = Point(point.y, point.x + 1);
-
-    for (char i=0; i < 6; i++)
-        if (!this->getPoint(point).setChain()) {
-            if (ps[i] == target) {
-                int cost = this->getPoint(point).cost();
-                if (this->finded_min_cost > cost)
-                    this->finded_min_cost = cost;
-            }
-        }
-        else {
+    MapPoint* map_point = this->getPoint(point);
+    for (char i=0; i < 4; i++) {
+        MapPoint *p = this->getPoint(ps[i]);
+        if (p != NULL && p->set(map_point->cost_path) && this->getPoint(ps[i])->type != MapPoint::pin)
             points.push_back(ps[i]);
-        }
+    }
 }
 
 void Map::findPath(const Point from, const Point to) {
+    std::cout << "From: " << from.y << " " << from.x << std::endl;
+    std::cout << "To: " << to.y << " " << to.x << std::endl;
+    // Заполняем карту волнами
     std::vector<Point> points_to_mark;
-    this->markNearlyPoints(points_to_mark, from, to);
+    this->markAdjacentPoints(points_to_mark, from);
     for (int i = 0; i < points_to_mark.size(); i++)
-        this->markNearlyPoints(points_to_mark, points_to_mark[i], to);
-    std::cout<<1;
+        this->markAdjacentPoints(points_to_mark, points_to_mark[i]);
+    points_to_mark.clear();  // Нам больше не нужен
+    // Идем обратно, составляем путь
+    std::cout << this->map[65][151].cost_path << std::endl;
+    std::cout << this->map[65][149].cost_path << std::endl;
+    std::cout << this->map[64][150].cost_path << std::endl;
+    std::cout << this->map[66][150].cost_path << std::endl;
 }
 
 MapPoint::MapPoint(pointType type) {
@@ -139,10 +116,26 @@ MapPoint::MapPoint(pointType type) {
     this->type = type;
 };
 
+bool MapPoint::setPin(Pin* pin) {
+    this->type = MapPoint::pin;
+    this->related = pin;
+    this->cost_path = 0;
+    return true;
+}
+
 bool MapPoint::setChain() {
-    if (count >= 9 || type == MapPoint::pin)
-        return false;
     this->count++;
+    return true;
+}
+
+bool MapPoint::set(int cost) {
+    if (this->type == MapPoint::pin)
+        return false;
+    this->type = MapPoint::chain;
+    if(this->cost_path > cost + 1) // Сюда можно добраться дешевле
+        this->cost_path = cost + 1;
+    else
+        return false;
     return true;
 }
 
