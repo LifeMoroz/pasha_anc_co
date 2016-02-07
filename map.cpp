@@ -42,7 +42,7 @@ void Map::setPoint(levelType z, cordType y, cordType x, pointType value) {
 }
 
 void Map::setPin(levelType z, cordType y, cordType x, pointType number) {
-    this->setPoint(z, y, x, Map::pin + number);
+    this->setPoint(z, y, x, Map::pin);
     this->pins.push_back(new Pin(Point(z,y,x), number));
 }
 
