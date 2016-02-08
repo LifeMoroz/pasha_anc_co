@@ -32,10 +32,13 @@ PolygonPoint* Polygon::findPoint(Point* first, Point* second) {
         float delta = 0.5, C0 = C1;
         if(i == 1 || i == 3) delta *= -1;
         if(i > 1) C0 = C2;
-        //points[i].y = -1 * (B * C0 + A * (C + delta)) / (A * A + B * B);
-        points[i].y =  (C0 * A - (C + delta) * B) / (B * B + A * A);
+        points[i].y =  (C0 * B - (C + delta) * A) / (B * B + A * A);
         points[i].x = (B * points[i].y + C0) / A;
     }
 
     return points;
+}
+
+double det (double a, double b, double c, double d) {
+    return a * d - b * c;
 }
