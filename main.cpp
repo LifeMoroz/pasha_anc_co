@@ -36,7 +36,7 @@ int main() {
     test_pins(map, pins);
     map.findPath(*pins[1], *pins[42]);
     test_chain(map);
-    map.findPath(*pins[0], *pins[41]);
-    test_chain(map);
+    //map.findPath(*pins[0], *pins[41]);
+    //test_chain(map);
     std::cerr << "Finished" << std::endl;
 }
