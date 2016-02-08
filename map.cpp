@@ -50,8 +50,8 @@ void Map::setPin(cordType y, cordType x, pointType number) {
     MapPoint* mp = this->getPoint(y, x);
     mp->setPin(new_pin);
     this->pins.push_back(new_pin);
-    Point* ps = this->getAdjacentPoints(*new_pin);
-    for (int i = 0; i < 4; i++) {
+    Point* ps = this->getAdjacentFNPoints(*new_pin);
+    for (int i = 0; i < 8; i++) {
         this->getPoint(ps[i])->type = MapPoint::connect; // Попдадаю сюда нарушает в 80% случаев правило отступа
     }
 }
@@ -68,19 +68,35 @@ void Map::setPins(std::vector<Point*> points) {  // null-end array
     }
 }
 
-Point* Map::getAdjacentPoints(Point& point) {
+Point* Map::getAdjacentMurPoints(Point &point) {
     /* Returns always 4 related points. Doesnt validate it */
     Point * ps = new Point[4];
     ps[0] = Point(point.y - 1, point.x);
     ps[1] = Point(point.y, point.x - 1);
     ps[2] = Point(point.y + 1, point.x);
     ps[3] = Point(point.y, point.x + 1);
+
+    return ps;
+}
+
+
+Point* Map::getAdjacentFNPoints(Point &point) {
+    /* Returns always 8 related points. Doesnt validate it */
+    Point * ps = new Point[8];
+    ps[0] = Point(point.y - 1, point.x);
+    ps[1] = Point(point.y, point.x - 1);
+    ps[2] = Point(point.y + 1, point.x);
+    ps[3] = Point(point.y, point.x + 1);
+    ps[4] = Point(point.y - 1, point.x - 1);
+    ps[5] = Point(point.y - 1, point.x + 1);
+    ps[6] = Point(point.y + 1, point.x - 1);
+    ps[7] = Point(point.y + 1, point.x + 1);
     return ps;
 }
 
 void Map::markAdjacentPoints(std::vector<Point> &points, Point point) {
     // Окрестность Мура -> 4 элемента
-    Point* ps = this->getAdjacentPoints(point);
+    Point* ps = this->getAdjacentMurPoints(point);
     MapPoint* map_point = this->getPoint(point);
     for (char i=0; i < 4; i++) {
         MapPoint *p = this->getPoint(ps[i]);
@@ -106,14 +122,14 @@ void Map::findPath(Point from, Point to) {
     Point* ps;
     char min_i = 0;  // вообще конечно ломает немножко
     while (point != from) {
-        ps = this->getAdjacentPoints(point);
+        ps = this->getAdjacentMurPoints(point);
         min_i = 0;
         MapPoint* map_point;
         MapPoint* min_related;
         for (char i = 0; i < 4; i++) {
             map_point = this->getPoint(ps[i]);
             min_related = this->getPoint(ps[min_i]);
-            if (map_point != NULL && map_point->type != MapPoint::pin && map_point->type != MapPoint::connect or point == to) {
+            if (map_point != NULL && map_point->type != MapPoint::pin && (map_point->type != MapPoint::connect or point == to)) {
                 if (min_related == NULL || map_point->cost_path < min_related->cost_path
                         || min_related->type == MapPoint::pin || min_related->type == MapPoint::connect) {
                     min_i = i;
@@ -129,6 +145,20 @@ void Map::findPath(Point from, Point to) {
                     this->getPoint(**it_ch)->setChain();
                 return;
             }
+            else if (map_point->type == MapPoint::connect) { //проходим растояния отступа
+                Point *related_points = this->getAdjacentMurPoints(ps[i]);
+                for (int k = 0; k < 4; k ++)
+                    if (related_points[k] == from) {
+                        chain_points.push_back(new Point(ps[i]));
+                        delete [] related_points;
+                        chain_points.push_back(new Point(from));
+                        this->chains.push_back(new Chain(chain_points));
+                        for (std::vector<Point *>::iterator it_ch = this->chains.back()->points.begin();
+                                 it_ch != this->chains.back()->points.end(); it_ch++)
+                            this->getPoint(**it_ch)->setChain();
+                        return;
+                    }
+            }
         }
         std::cout<<ps[min_i].x << " " << ps[min_i].y<< " " << min_related->cost_path << std::endl;
         chain_points.push_back(new Point(ps[min_i]));
@@ -140,12 +170,14 @@ void Map::findPath(Point from, Point to) {
 MapPoint::MapPoint(pointType type) {
     this->count = 0;
     this->type = type;
+    this->cost_path = 999999;
 };
 
 bool MapPoint::setPin(Pin* pin) {
+    this->count = 0;
     this->type = MapPoint::pin;
     this->related = pin;
-    this->cost_path = -1;
+    this->cost_path = 0;
     return true;
 }
 
@@ -160,7 +192,7 @@ bool MapPoint::setChain() {
 bool MapPoint::set(int cost) {
     if (this->type == MapPoint::pin)
         return false;
-    if(this->cost_path > cost + this->cost()) // Сюда можно добраться дешевле
+    if(this->cost_path > (cost + this->cost())) // Сюда можно добраться дешевле
         this->cost_path = cost + this->cost();
     else
         return false;

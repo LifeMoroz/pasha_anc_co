@@ -34,10 +34,9 @@ int main() {
     Map map(210, 210);
     map.setPins(pins);
     test_pins(map, pins);
-    map.findPath(*pins[0], *pins[41]);
-    test_chain(map);
     map.findPath(*pins[1], *pins[42]);
     test_chain(map);
-    std::cout << map.getPoint(*map.chains[0]->points[5])->count << std::endl;
+    map.findPath(*pins[0], *pins[41]);
+    test_chain(map);
     std::cerr << "Finished" << std::endl;
 }

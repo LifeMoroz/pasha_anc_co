@@ -62,7 +62,9 @@ private:
 
     void markAdjacentPoints(std::vector<Point> &points, Point point);
 
-    Point *getAdjacentPoints(Point &point);
+    Point *getAdjacentMurPoints(Point &point);
+
+    Point *getAdjacentFNPoints(Point &point);
 };
 
 #endif //PROJECT_MAP_H
