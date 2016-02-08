@@ -65,6 +65,8 @@ private:
     Point *getAdjacentMurPoints(Point &point);
 
     Point *getAdjacentFNPoints(Point &point);
+
+    void clear();
 };
 
 #endif //PROJECT_MAP_H

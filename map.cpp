@@ -53,6 +53,7 @@ void Map::setPin(cordType y, cordType x, pointType number) {
     Point* ps = this->getAdjacentFNPoints(*new_pin);
     for (int i = 0; i < 8; i++) {
         this->getPoint(ps[i])->type = MapPoint::connect; // Попдадаю сюда нарушает в 80% случаев правило отступа
+        this->getPoint(ps[i])->cost_path = 15; // Попдадаю сюда нарушает в 80% случаев правило отступа
     }
 }
 
@@ -100,10 +101,17 @@ void Map::markAdjacentPoints(std::vector<Point> &points, Point point) {
     MapPoint* map_point = this->getPoint(point);
     for (char i=0; i < 4; i++) {
         MapPoint *p = this->getPoint(ps[i]);
-        if (p != NULL && p->set(map_point->cost_path) && this->getPoint(ps[i])->type != MapPoint::pin)
+        if (p != NULL && this->getPoint(ps[i])->type != MapPoint::pin && p->set(map_point->cost_path))
             points.push_back(Point(ps[i]));
     }
     delete [] ps;
+}
+
+void Map::clear() {
+    for (int i = 0; i < this->y_size; i++)
+        for(int k = 0; k < this->x_size; k++)
+            if (this->map[i][k].type != MapPoint::pin)
+                this->map[i][k].cost_path = 99999;
 }
 
 void Map::findPath(Point from, Point to) {
@@ -145,7 +153,7 @@ void Map::findPath(Point from, Point to) {
                     this->getPoint(**it_ch)->setChain();
                 return;
             }
-            else if (map_point->type == MapPoint::connect) { //проходим растояния отступа
+            else if (map_point != NULL && map_point->type == MapPoint::connect) { //проходим растояния отступа
                 Point *related_points = this->getAdjacentMurPoints(ps[i]);
                 for (int k = 0; k < 4; k ++)
                     if (related_points[k] == from) {
@@ -160,11 +168,12 @@ void Map::findPath(Point from, Point to) {
                     }
             }
         }
-        std::cout<<ps[min_i].x << " " << ps[min_i].y<< " " << min_related->cost_path << std::endl;
+        //std::cout<<ps[min_i].x << " " << ps[min_i].y<< " " << min_related->cost_path << std::endl;
         chain_points.push_back(new Point(ps[min_i]));
         point = *chain_points.back();
         delete [] ps;
     }
+    this->clear();
 }
 
 MapPoint::MapPoint(pointType type) {
@@ -192,8 +201,9 @@ bool MapPoint::setChain() {
 bool MapPoint::set(int cost) {
     if (this->type == MapPoint::pin)
         return false;
-    if(this->cost_path > (cost + this->cost())) // Сюда можно добраться дешевле
+    if (this->cost_path > (cost + this->cost())) {// Сюда можно добраться дешевле
         this->cost_path = cost + this->cost();
+    }
     else
         return false;
     return true;
